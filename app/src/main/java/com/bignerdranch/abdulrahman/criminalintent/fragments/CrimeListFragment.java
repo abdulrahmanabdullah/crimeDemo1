@@ -18,6 +18,7 @@ import com.bignerdranch.abdulrahman.criminalintent.CrimeActivity;
 import com.bignerdranch.abdulrahman.criminalintent.R;
 import com.bignerdranch.abdulrahman.criminalintent.model.Crime;
 import com.bignerdranch.abdulrahman.criminalintent.model.CrimeLab;
+import com.bignerdranch.abdulrahman.criminalintent.viewPager.CrimeViewPagerActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,7 @@ public class CrimeListFragment extends Fragment {
     private RecyclerView mRecyclerView ;
 
     private CrimeAdapter mAdapter ;
+    public int currentItem ;
 
     @Nullable
     @Override
@@ -55,8 +57,11 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull CrimeHolder holder, int position) {
             Crime crime = mCrimeList.get(position);
-            holder.bind(crime);
+            holder.bind(crime,position);
+//            this.notifyItemChanged(position);
         }
+
+
 
         @Override
         public int getItemCount() {
@@ -78,11 +83,14 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
-        public void bind(Crime paramCrime){
+        public void bind(Crime paramCrime,int parmCurrentItem){
             mCrime = paramCrime ;
             txvCrimeTitle.setText(mCrime.getTitle());
             txvCrimeDate.setText(getHumanDate(mCrime.getDate()));
             imgCrimeSolve.setVisibility(paramCrime.isSolve() ? View.VISIBLE : View.GONE);
+             currentItem = parmCurrentItem ;
+//             Toast.makeText(getActivity()," onBind func id = "+currentItem,Toast.LENGTH_SHORT).show();
+
         }
 
         private String getHumanDate(Date paramDate){
@@ -92,11 +100,12 @@ public class CrimeListFragment extends Fragment {
         }
         @Override
         public void onClick(View v) {
-            Intent intent = CrimeActivity.newIntent(getActivity(),mCrime.getID());
-            startActivityForResult(intent, REQUEST_CODE);
+//            Intent intent = CrimeActivity.newIntent(getActivity(),mCrime.getID());
+//            startActivityForResult(intent, REQUEST_CODE);
+            // open viewPager activity ..
+            Intent intent = CrimeViewPagerActivity.newIntent(getActivity(),mCrime.getID());
+            startActivity(intent);
         }
-
-
     }
 
     @Override
@@ -113,7 +122,8 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimeList);
             mRecyclerView.setAdapter(mAdapter);
         }else{
-            mAdapter.notifyDataSetChanged();
+//            Toast.makeText(getActivity()," Current position = "+currentItem,Toast.LENGTH_SHORT).show();
+            mAdapter.notifyItemChanged(currentItem);
         }
 
     }

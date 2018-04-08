@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// singleton pattern
 public class CrimeLab {
     private static CrimeLab INSTANCE ;
     public List<Crime> mCrimeList ;
