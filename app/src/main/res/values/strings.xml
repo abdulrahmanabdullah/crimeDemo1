@@ -4,4 +4,8 @@
     <string name="crime_title_label">Title</string>
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
+    <string name="back_to_firstCrime">Back to first Crime</string>
+    <string name="jump_to_LastCrime">Jump to last Crime</string>
+    <string name="date_picker_title">Date of crime:</string>
+    <string name="ok">ok</string>
 </resources>

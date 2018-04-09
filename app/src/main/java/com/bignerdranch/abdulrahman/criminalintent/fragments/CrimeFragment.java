@@ -1,10 +1,12 @@
 package com.bignerdranch.abdulrahman.criminalintent.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,23 +17,25 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
-import com.bignerdranch.abdulrahman.criminalintent.CrimeActivity;
 import com.bignerdranch.abdulrahman.criminalintent.R;
 import com.bignerdranch.abdulrahman.criminalintent.model.Crime;
 import com.bignerdranch.abdulrahman.criminalintent.model.CrimeLab;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
+    private  final String DIALOG_DATE = "dialogDate";
     private Crime mCrime ;
+    private final int REQUEST_CODE = 0 ;
     // editText
     EditText edTitleField ;
     // button
     Button btnDate;
     //checkBox
     CheckBox chBoxSolved ;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,8 +79,19 @@ public class CrimeFragment extends Fragment {
             }
         });
         btnDate = view.findViewById(R.id.btn_crime_date);
-        btnDate.setText(mCrime.getDate().toString());
-        btnDate.setEnabled(false);
+//        btnDate.setText(mCrime.getDate().toString());
+        updateDate();
+//        btnDate.setEnabled(false);
+        //Two open dialog datePicker ..
+        btnDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this,REQUEST_CODE);
+                dialog.show(fm,DIALOG_DATE);
+            }
+        });
         chBoxSolved = view.findViewById(R.id.ch_crime_solved);
         chBoxSolved.setChecked(mCrime.isSolve());
         chBoxSolved.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -86,5 +101,27 @@ public class CrimeFragment extends Fragment {
             }
         });
         return  view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) return;
+        if (requestCode == REQUEST_CODE){
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCrime.setDate(date);
+//            btnDate.setText(getHumanDate(mCrime.getDate()));
+            updateDate();
+        }
+    }
+
+    private String getHumanDate(Date paramDate){
+        String pattern = "EEE, MMM d , yyy ";
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        return format.format(paramDate) ;
+    }
+
+    private void updateDate(){
+        String date = getHumanDate(mCrime.getDate());
+        btnDate.setText(date);
     }
 }
