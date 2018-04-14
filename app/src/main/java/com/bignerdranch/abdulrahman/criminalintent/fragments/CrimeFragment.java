@@ -28,12 +28,15 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
     private  final String DIALOG_DATE = "dialogDate";
+    private  final String DIALOG_TIME = "dialogTime";
     private Crime mCrime ;
     private final int REQUEST_CODE = 0 ;
+    private final int REQUEST_CODE_TIME=1;
     // editText
     EditText edTitleField ;
     // button
     Button btnDate;
+    Button btnTime;
     //checkBox
     CheckBox chBoxSolved ;
     @Override
@@ -100,6 +103,19 @@ public class CrimeFragment extends Fragment {
 
             }
         });
+
+        btnTime = view.findViewById(R.id.btn_crime_time);
+        btnTime.setText(R.string.crime_time);
+        btnTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(getActivity()," clicked",Toast.LENGTH_SHORT).show();
+                FragmentManager fm = getFragmentManager();
+                TimePickerFragment timeDialog = TimePickerFragment.newInstanceTest("TEST");
+                timeDialog.setTargetFragment(CrimeFragment.this,REQUEST_CODE_TIME);
+                timeDialog.show(fm,DIALOG_TIME);
+            }
+        });
         return  view;
     }
 
@@ -112,16 +128,30 @@ public class CrimeFragment extends Fragment {
 //            btnDate.setText(getHumanDate(mCrime.getDate()));
             updateDate();
         }
+        else if (requestCode == REQUEST_CODE_TIME){
+//            Date date  =(Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            String str =(String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            btnTime.setText(str);
+        }
     }
 
-    private String getHumanDate(Date paramDate){
-        String pattern = "EEE, MMM d , yyy ";
-        SimpleDateFormat format = new SimpleDateFormat(pattern);
+    private void testTimeButton(){
+        String str = mCrime.getTitle();
+        btnTime.setText(str);
+    }
+    private String getHumanDate(Date paramDate,String datePattern){
+        if (paramDate == null || datePattern == null ) return "Null" ;
+        SimpleDateFormat format = new SimpleDateFormat(datePattern);
         return format.format(paramDate) ;
     }
-
+    private String datePattern = "EEE, MMM d , yyy ";
     private void updateDate(){
-        String date = getHumanDate(mCrime.getDate());
+        String date = getHumanDate(mCrime.getDate(),datePattern);
         btnDate.setText(date);
+    }
+    private String timePattern = "hh:mm:ss a zzz";
+    private void updateTime(){
+       String time = getHumanDate(mCrime.getDate(),timePattern);
+       btnTime.setText(time);
     }
 }

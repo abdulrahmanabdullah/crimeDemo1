@@ -21,12 +21,12 @@ public class CrimeLab {
     // private Constructor ..
     private CrimeLab(Context paramContext){
         mCrimeList = new ArrayList<>();
-        for (int i = 1 ; i < 100 ; i++){
-            Crime crime = new Crime();
-            crime.setTitle(" Crime # "+ i );
-            crime.setSolve(i % 2 == 0); // every other one .
-            mCrimeList.add(crime);
-        }
+//        for (int i = 1 ; i < 100 ; i++){
+//            Crime crime = new Crime();
+//            crime.setTitle(" Crime # "+ i );
+//            crime.setSolve(i % 2 == 0); // every other one .
+//            mCrimeList.add(crime);
+//        }
     }
 
     public List<Crime> getCrimeList(){ return  mCrimeList;}
@@ -37,5 +37,9 @@ public class CrimeLab {
             }
         }
         return null ;
+    }
+
+    public void addCrime(Crime paramCrime){
+        mCrimeList.add(paramCrime);
     }
 }
