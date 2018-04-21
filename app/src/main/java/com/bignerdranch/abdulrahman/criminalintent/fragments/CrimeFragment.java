@@ -2,11 +2,16 @@ package com.bignerdranch.abdulrahman.criminalintent.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ShareCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -17,10 +22,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.bignerdranch.abdulrahman.criminalintent.R;
-import com.bignerdranch.abdulrahman.criminalintent.dataBase.CrimeDbScheme;
 import com.bignerdranch.abdulrahman.criminalintent.model.Crime;
 import com.bignerdranch.abdulrahman.criminalintent.model.CrimeLab;
 
@@ -36,12 +39,16 @@ public class CrimeFragment extends Fragment {
     private Crime mCrime ;
     private final int REQUEST_CODE = 0 ;
     private final int REQUEST_CODE_TIME=1;
+    private final int REQUEST_CONTACT=2;
+
     // editText
     EditText edTitleField ;
     // button
     Button btnDate;
     Button btnTime;
     Button btnDeleteCrime ;
+    Button btnSuspect ;
+    Button btnCrimeReport ;
     //checkBox
     CheckBox chBoxSolved ;
     List<Crime> mList ;
@@ -76,7 +83,6 @@ public class CrimeFragment extends Fragment {
         edTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -135,6 +141,38 @@ public class CrimeFragment extends Fragment {
                 getActivity().finish();
             }
         });
+
+        btnCrimeReport = view.findViewById(R.id.btn_crime_report);
+        btnCrimeReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_SEND);
+//                intent.setType("text/plain");
+//                intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+//                intent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.crime_report_subject));
+//                intent = Intent.createChooser(intent,getString(R.string.send_report));
+//                startActivity(intent);
+                // try to user ShareCompat ..
+                Intent shared = ShareCompat.IntentBuilder.from(getActivity())
+                        .setType("text/plain")
+                        .setText(getCrimeReport())
+                        .setSubject(getString(R.string.send_report))
+                        .getIntent();
+                startActivity(shared);
+            }
+        });
+        btnSuspect = view.findViewById(R.id.btn_crime_suspect);
+        final Intent contactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        // if any device not have contact app ...
+        PackageManager packageManager = getActivity().getPackageManager();
+        if (packageManager.resolveActivity(contactIntent,PackageManager.MATCH_DEFAULT_ONLY) == null)btnSuspect.setEnabled(false);
+        btnSuspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(contactIntent,REQUEST_CONTACT);
+            }
+        });
+        if (mCrime.getSuspect() !=null)btnSuspect.setText(mCrime.getSuspect());
         return  view;
     }
 
@@ -150,8 +188,27 @@ public class CrimeFragment extends Fragment {
             String str =(String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
             btnTime.setText(str);
         }
+        else if (requestCode == REQUEST_CONTACT && data != null ){
+            getSuspectFromContact(data);
+        }
     }
 
+    // get the suspect from contact .
+    private void getSuspectFromContact(Intent data){
+        Uri contactUri = data.getData();
+        String[] queryField = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+        Cursor cursor = getActivity().getContentResolver().query(contactUri,queryField,null,null,null);
+        //check cursor not empty ..
+        try{
+            if (cursor.getCount() == 0 ) return;
+            cursor.moveToFirst();
+            String suspect = cursor.getString(0);
+            mCrime.setSuspect(suspect);
+            btnSuspect.setText(mCrime.getSuspect());
+        }finally {
+            cursor.close();
+        }
+    }
 
     private String getHumanDate(Date paramDate,String datePattern){
         if (paramDate == null || datePattern == null ) return "Null" ;
@@ -176,7 +233,7 @@ public class CrimeFragment extends Fragment {
     }
 
 
-    private String getCrimeRepot(){
+    private String getCrimeReport(){
         String solvedString = null ;
         if (mCrime.isSolve())solvedString = getString(R.string.crime_report_solved);
         else solvedString = getString(R.string.crime_report_unsolved);
