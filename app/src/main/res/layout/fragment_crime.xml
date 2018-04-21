@@ -29,6 +29,21 @@
         android:id="@+id/btn_crime_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_crime_delete"
+        android:text="@string/delete_crime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_crime_suspect"
+        android:text="@string/crime_suspect_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btn_crime_report"
+        android:text="@string/crime_report_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <CheckBox
         android:text="@string/crime_solved_label"
         android:id="@+id/ch_crime_solved"

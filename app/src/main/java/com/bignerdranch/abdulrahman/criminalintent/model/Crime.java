@@ -9,12 +9,17 @@ public class Crime {
     private String mTitle ;
     private Date mDate ;
     private boolean mSolve ;
+    private String suspect ;
+
 
     public Crime(){
-        mID = UUID.randomUUID();
-        mDate = new Date();
+        this(UUID.randomUUID());
     }
 
+    public Crime(UUID paramUUID){
+        mID = paramUUID;
+        mDate = new Date();
+    }
     //setter ..
     public void setTitle(String paramTitle) {
         mTitle = paramTitle;
@@ -43,5 +48,13 @@ public class Crime {
 
     public boolean isSolve() {
         return mSolve;
+    }
+
+    public String getSuspect() {
+        return suspect;
+    }
+
+    public void setSuspect(String paramSuspect) {
+        suspect = paramSuspect;
     }
 }

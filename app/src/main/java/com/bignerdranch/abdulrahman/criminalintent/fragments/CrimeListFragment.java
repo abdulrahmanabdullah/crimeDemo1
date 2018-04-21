@@ -15,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bignerdranch.abdulrahman.criminalintent.CrimeActivity;
 import com.bignerdranch.abdulrahman.criminalintent.R;
 import com.bignerdranch.abdulrahman.criminalintent.model.Crime;
 import com.bignerdranch.abdulrahman.criminalintent.model.CrimeLab;
@@ -34,6 +31,9 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter ;
     public int currentItem ;
 
+    private boolean isSubtitleVisible ;
+    private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +48,11 @@ public class CrimeListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime_list,container,false);
         mRecyclerView = view.findViewById(R.id.crime_recycler_view);
         mRecyclerView.setLayoutManager( new LinearLayoutManager(getActivity()));
-//        updateUI();
+        // to save crime counter value ,when rotation screen .
+        if (savedInstanceState !=null){
+            isSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
+        updateUI();
         return view ;
     }
 
@@ -71,9 +75,6 @@ public class CrimeListFragment extends Fragment {
             holder.bind(crime,position);
 //            this.notifyItemChanged(position);
         }
-
-
-
         @Override
         public int getItemCount() {
             return mCrimeList.size();
@@ -118,7 +119,6 @@ public class CrimeListFragment extends Fragment {
             startActivity(intent);
         }
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE ){
@@ -133,10 +133,11 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimeList);
             mRecyclerView.setAdapter(mAdapter);
         }else{
-//            Toast.makeText(getActivity()," Current position = "+currentItem,Toast.LENGTH_SHORT).show();
+//            mAdapter.notifyDataSetChanged();
             mAdapter.notifyItemChanged(currentItem);
+//            mAdapter.notifyItemRangeChanged(currentItem,crimeList.size());
         }
-
+        updateSubtitle();
     }
 
     @Override
@@ -150,6 +151,12 @@ public class CrimeListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.fragment_crime_list,menu);
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        if(isSubtitleVisible){
+            subtitleItem.setTitle(R.string.hide_subtitle);
+}else{
+            subtitleItem.setTitle(R.string.show_subtitle);
+}
     }
 
     @Override
@@ -161,8 +168,27 @@ public class CrimeListFragment extends Fragment {
                 Intent intent = CrimeViewPagerActivity.newIntent(getActivity(),crime.getID());
                 startActivity(intent);
                 return  true;
+                case R.id.show_subtitle:
+                    isSubtitleVisible = !isSubtitleVisible ;
+                    getActivity().invalidateOptionsMenu();
+                    updateSubtitle();
+                    return true ;
                 default:
                     return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void updateSubtitle(){
+        int crimeCounter = CrimeLab.get(getActivity()).getCrimeList().size();
+        // using plurals string .
+        String subtitle = getResources().getQuantityString(R.plurals.subtitle_plurals,crimeCounter,crimeCounter);
+        android.support.v7.app.AppCompatActivity activity = (android.support.v7.app.AppCompatActivity) getActivity();
+        activity.getSupportActionBar().setSubtitle(subtitle);
+}
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE,isSubtitleVisible);
     }
 }
