@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.bignerdranch.abdulrahman.criminalintent.R;
 import com.bignerdranch.abdulrahman.criminalintent.model.Crime;
@@ -52,6 +54,9 @@ public class CrimeFragment extends Fragment {
     //checkBox
     CheckBox chBoxSolved ;
     List<Crime> mList ;
+
+    ImageView imgPhoto;
+    ImageButton imbPhotoButton ;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +79,29 @@ public class CrimeFragment extends Fragment {
     public void retuernResult(){
         getActivity().setResult(Activity.RESULT_OK,null);
     }
+
+    public void declareViews(View view){
+        // Edit Text
+        edTitleField = view.findViewById(R.id.ed_crime_title);
+        // check box
+        chBoxSolved = view.findViewById(R.id.ch_crime_solved);
+        // Buttons
+        btnDate = view.findViewById(R.id.btn_crime_date);
+        btnDeleteCrime = view.findViewById(R.id.btn_crime_delete);
+        btnTime = view.findViewById(R.id.btn_crime_time);
+        btnCrimeReport = view.findViewById(R.id.btn_crime_report);
+        btnSuspect = view.findViewById(R.id.btn_crime_suspect);
+        // ImageView
+        imgPhoto = view.findViewById(R.id.img_crime_photo);
+        // ImageButton
+        imbPhotoButton =view.findViewById(R.id.imb_crime_camera);
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime,container,false);
-        edTitleField = view.findViewById(R.id.ed_crime_title);
+        // declare views .
+        declareViews(view);
         edTitleField.setText(mCrime.getTitle());
         edTitleField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -94,8 +117,6 @@ public class CrimeFragment extends Fragment {
 
             }
         });
-        btnDate = view.findViewById(R.id.btn_crime_date);
-        btnDeleteCrime = view.findViewById(R.id.btn_crime_delete);
 //        btnDate.setText(mCrime.getDate().toString());
         updateDate();
 //        btnDate.setEnabled(false);
@@ -109,7 +130,6 @@ public class CrimeFragment extends Fragment {
                 dialog.show(fm,DIALOG_DATE);
             }
         });
-        chBoxSolved = view.findViewById(R.id.ch_crime_solved);
         chBoxSolved.setChecked(mCrime.isSolve());
         chBoxSolved.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -118,7 +138,6 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        btnTime = view.findViewById(R.id.btn_crime_time);
         btnTime.setText(R.string.crime_time);
         btnTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +161,6 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        btnCrimeReport = view.findViewById(R.id.btn_crime_report);
         btnCrimeReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -161,7 +179,6 @@ public class CrimeFragment extends Fragment {
                 startActivity(shared);
             }
         });
-        btnSuspect = view.findViewById(R.id.btn_crime_suspect);
         final Intent contactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         // if any device not have contact app ...
         PackageManager packageManager = getActivity().getPackageManager();
