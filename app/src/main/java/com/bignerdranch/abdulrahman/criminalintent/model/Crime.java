@@ -57,4 +57,10 @@ public class Crime {
     public void setSuspect(String paramSuspect) {
         suspect = paramSuspect;
     }
+
+    // to set unique photo ..
+    public String getPhotoFileName(){
+        return "IMG_"+getID().toString()+".jpg";
+    }
+
 }

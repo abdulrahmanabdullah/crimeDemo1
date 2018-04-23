@@ -12,6 +12,7 @@ import com.bignerdranch.abdulrahman.criminalintent.dataBase.CrimeCursorWrapper;
 import com.bignerdranch.abdulrahman.criminalintent.dataBase.CrimeDbScheme.CrimeTable;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -100,5 +101,11 @@ public class CrimeLab {
        int deleteRow =  mSQLiteDatabase.delete(CrimeTable.NAME,whereClause,new String[]{paramCrime.getID().toString()});
 //       if (deleteRow >0) Toast.makeText()
         Log.v("main","success deleted "+deleteRow);
+    }
+
+    // photo should live here ..
+    public File getPhotoFile(Crime paramCrime){
+        File fileDir = mContext.getFilesDir(); // this returns a private application files and directors
+        return new File(fileDir,paramCrime.getPhotoFileName());
     }
 }

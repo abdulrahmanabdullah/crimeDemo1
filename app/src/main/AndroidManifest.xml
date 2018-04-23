@@ -17,6 +17,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".viewPager.CrimeViewPagerActivity" android:parentActivityName=".controller.CrimeListActivity"/>
+        <!--<provider-->
+            <!--android:authorities="com.bignerdranch.abdulrahman.criminalintent.fileprovider"-->
+            <!--android:name="android.support.v4.content.FileProvider"-->
+            <!--android:exported="false"-->
+            <!--android:grantUriPermissions="true"-->
+            <!--/>-->
+           <!--<meta-data-->
+               <!--android:name="android.support.FILE_PROVIDER_PATHS"-->
+               <!--android:resource="@xml/files"/>-->
     </application>
 
 </manifest>
